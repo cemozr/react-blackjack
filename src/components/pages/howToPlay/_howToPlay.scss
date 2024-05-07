@@ -1,0 +1,16 @@
+ul {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background-color: $primary;
+  border-radius: 0.5rem;
+  box-shadow: rgba(252, 186, 3, 0.4) 5px 5px, rgba(252, 186, 3, 0.3) 10px 10px,
+    rgba(252, 186, 3, 0.2) 15px 15px, rgba(252, 186, 3, 0.1) 20px 20px,
+    rgba(252, 186, 3, 0.05) 25px 25px;
+  li {
+    margin: 1rem;
+    color: $secondary;
+    font-size: large;
+    font-weight: bold;
+    text-align: start;
+  }
+}

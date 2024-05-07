@@ -1,0 +1,13 @@
+//base styles
+@import "./variables";
+@import "./mixins";
+@import "./utilities";
+//page styles
+@import "./components/pages/EndGamePage/endGamePage";
+@import "./components/pages/errorPage/errorPage";
+@import "./components/pages/gamePage/gamePage";
+@import "./components/pages/howToPlay/howToPlay";
+@import "./components/pages/mainMenu/mainMenu";
+//component styles
+@import "./components/UI/button";
+@import "./components/cards/gameTable/gameTable";

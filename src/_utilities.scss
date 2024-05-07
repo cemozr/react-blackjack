@@ -1,0 +1,35 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+#root {
+  min-width: 100vw;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+body {
+  @include center;
+
+  min-height: 100vh;
+
+  background-image: url("./assets/black-fabric-textile-textured-background.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+h1 {
+  @include title-style;
+  font-size: 10rem;
+}
+h2 {
+  @include title-style;
+  font-size: 5rem;
+}
+h3 {
+  @include title-style;
+  font-size: 3rem;
+}

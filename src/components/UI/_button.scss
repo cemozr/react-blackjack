@@ -1,0 +1,39 @@
+.link {
+}
+.btn {
+  padding: 0.6rem;
+  width: 10rem;
+  margin: 1rem;
+  background-color: $primary;
+  border-radius: 0.5rem;
+  &:hover {
+    cursor: pointer;
+    animation: boing 600ms ease-in-out !important;
+  }
+  &__text {
+    font-size: large;
+    font-weight: bold;
+    color: $secondary;
+  }
+}
+
+@keyframes boing {
+  15%,
+  40%,
+  75%,
+  100% {
+    transform-origin: center center;
+  }
+  15% {
+    transform: scale(1.1, 1.1);
+  }
+  40% {
+    transform: scale(0.9, 0.9);
+  }
+  75% {
+    transform: scale(1, 1);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}

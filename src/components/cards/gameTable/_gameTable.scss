@@ -1,0 +1,24 @@
+.outer-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  &__score {
+    text-align: end;
+  }
+}
+.game-container {
+  .dealer-container {
+    margin: 1rem;
+    &__image {
+      @include card-style;
+    }
+    &__image--back {
+      @include card-style;
+    }
+  }
+  .player-container {
+    &__image {
+      @include card-style;
+    }
+  }
+}
