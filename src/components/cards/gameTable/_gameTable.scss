@@ -6,19 +6,50 @@
     text-align: end;
   }
 }
-.game-container {
-  .dealer-container {
-    margin: 1rem;
-    &__image {
-      @include card-style;
-    }
-    &__image--back {
-      @include card-style;
+.game-wrapper {
+  @include center;
+
+  .game-table-container {
+    margin-left: 15rem;
+    .game-container {
+      .dealer-container {
+        margin: 1rem;
+        &__image {
+          @include card-style;
+        }
+        &__image--back {
+          @include card-style;
+        }
+      }
+      .player-container {
+        &__image {
+          @include card-style;
+        }
+      }
     }
   }
-  .player-container {
-    &__image {
-      @include card-style;
+  .bet-container {
+    @include center;
+    flex-direction: column;
+    margin-left: 2rem;
+    &__chips-image {
+      width: 20rem;
+    }
+    &__bet-input {
+      width: 9.8rem;
+      height: 2rem;
+      font-size: large;
+      font-weight: bold;
+      color: $secondary;
+      text-align: center;
+      border: 2px solid $primary;
+      border-radius: 0.1rem;
+      &:active {
+        border-color: $secondary;
+      }
+      &:disabled {
+        background-color: gray;
+      }
     }
   }
 }

@@ -11,7 +11,7 @@ type Deck = {
   remaining: number;
   shuffled: boolean;
 };
-type Card = {
+export type Card = {
   code: string;
   image: string;
   images: {
@@ -21,7 +21,7 @@ type Card = {
   value: string;
   suit: string;
 };
-type Hand = {
+export type Hand = {
   success: boolean;
   deck_id: string;
   cards: Card[];

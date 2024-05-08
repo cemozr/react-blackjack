@@ -1,6 +1,7 @@
 @mixin center {
   display: flex;
-  place-items: center;
+  justify-content: center;
+  align-items: center;
 }
 @mixin title-style {
   color: $primary;

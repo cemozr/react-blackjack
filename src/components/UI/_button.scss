@@ -10,6 +10,10 @@
     cursor: pointer;
     animation: boing 600ms ease-in-out !important;
   }
+  &:disabled {
+    background-color: gray;
+    cursor: not-allowed;
+  }
   &__text {
     font-size: large;
     font-weight: bold;
