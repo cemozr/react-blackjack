@@ -1,19 +1,38 @@
 .outer-container {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: flex-start;
   &__score {
     text-align: end;
   }
 }
 .game-wrapper {
-  @include center;
-
+  display: flex;
+  justify-content: center;
   .game-table-container {
-    margin-left: 15rem;
+    border: 1px solid $primary;
+    border-radius: 1rem;
+    background-color: black;
+    width: 80rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-shadow: rgba(244, 181, 0, 0.25) 0px 30px 60px -12px inset,
+      rgba(244, 181, 0, 0.3) 0px 18px 36px -18px inset;
+
     .game-container {
+      margin: 1rem;
+      .score-badge {
+        margin-left: 0.5rem;
+      }
       .dealer-container {
-        margin: 1rem;
+        .animation-wrapper {
+          width: 10rem;
+          text-align: center;
+          @include loading-animation;
+        }
+
+        display: flex;
         &__image {
           @include card-style;
         }
@@ -22,6 +41,12 @@
         }
       }
       .player-container {
+        .animation-wrapper {
+          width: 10rem;
+          text-align: center;
+          @include loading-animation;
+        }
+        display: flex;
         &__image {
           @include card-style;
         }

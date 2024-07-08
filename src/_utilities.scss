@@ -20,6 +20,11 @@ body {
   background-size: cover;
   background-position: center;
 }
+p {
+  font-size: large;
+  font-weight: bold;
+  color: $secondary;
+}
 
 h1 {
   @include title-style;

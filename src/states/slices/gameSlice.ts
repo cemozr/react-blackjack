@@ -28,10 +28,21 @@ export type Hand = {
   remaining: number;
 };
 
-type GameState = {
+type BaseSetup = {
   deck: Deck;
   playerHand: Hand;
   dealerHand: Hand;
+};
+
+type GameState = BaseSetup & {
+  isPending: boolean;
+  isStand: boolean;
+  isBetOpen: boolean;
+  turn: "player" | "dealer";
+  playerHandValue: number;
+  dealerHandValue: number;
+  chips: number;
+  bet: number;
 };
 const initialState: GameState = {
   deck: {
@@ -94,31 +105,150 @@ const initialState: GameState = {
     ],
     remaining: 0,
   },
+  isPending: false,
+  isStand: false,
+  isBetOpen: true,
+  turn: "player",
+  playerHandValue: 0,
+  dealerHandValue: 0,
+  chips: 200,
+  bet: 0,
 };
+let playerTotalPoint: number = 0;
+let dealerTotalPoint: number = 0;
 
 const gameSlice = createSlice({
   name: "game",
   initialState,
-  reducers: {},
+  reducers: {
+    addBet: (state, action: PayloadAction<number>) => {
+      state.bet = action.payload;
+      state.chips -= state.bet;
+      state.isBetOpen = false;
+      state.turn = "player";
+    },
+
+    stand: () => {},
+    resetStates: () => {
+      return initialState;
+    },
+  },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchDeck.pending, () => {
+      .addCase(fetchDeck.pending, (state) => {
+        state.isPending = true;
         console.log("waiting for the deck");
       })
       .addCase(
         fetchDeck.fulfilled,
-        (state, action: PayloadAction<GameState>) => {
+        (state, action: PayloadAction<BaseSetup>) => {
+          state.isPending = false;
           state.deck = action.payload.deck;
           state.playerHand = action.payload.playerHand;
           state.dealerHand = action.payload.dealerHand;
+
+          state.playerHand.cards.forEach((card) => {
+            switch (card.value) {
+              case "KING":
+              case "QUEEN":
+              case "JACK":
+                playerTotalPoint += 10;
+                break;
+              case "ACE":
+                playerTotalPoint <= 10
+                  ? (playerTotalPoint += 11)
+                  : (playerTotalPoint += 1);
+                break;
+              default:
+                playerTotalPoint += +card.value;
+            }
+          });
+          state.playerHandValue += playerTotalPoint;
+          state.dealerHand.cards.forEach((card) => {
+            switch (card.value) {
+              case "KING":
+              case "QUEEN":
+              case "JACK":
+                dealerTotalPoint += 10;
+                break;
+              case "ACE":
+                dealerTotalPoint <= 10
+                  ? (dealerTotalPoint += 11)
+                  : (dealerTotalPoint += 1);
+                break;
+              default:
+                dealerTotalPoint += +card.value;
+            }
+          });
+          state.dealerHandValue += dealerTotalPoint;
         }
       )
       .addCase(fetchDeck.rejected, () => {
         console.log("error");
         throw new Error();
       });
+    builder
+      .addCase(drawCard.pending, (state) => {
+        state.isPending = true;
+        console.log("drawing card");
+      })
+      .addCase(drawCard.fulfilled, (state, action: PayloadAction<Hand>) => {
+        const playerDraw = action.payload.cards[0];
+        const dealerDraw = action.payload.cards[1];
+        state.isPending = false;
+        state.playerHand.cards.push(action.payload.cards[0]);
+        //---------------------------------------------------------------------------------
+
+        switch (playerDraw.value) {
+          case "KING":
+          case "QUEEN":
+          case "JACK":
+            playerTotalPoint += 10;
+            break;
+          case "ACE":
+            playerTotalPoint <= 10
+              ? (playerTotalPoint += 11)
+              : (playerTotalPoint += 1);
+            break;
+          default:
+            playerTotalPoint += +playerDraw.value;
+        }
+
+        state.playerHandValue = playerTotalPoint;
+        //---------------------------------------------------------------------------------
+        if (dealerTotalPoint <= 17) {
+          state.dealerHand.cards.push(action.payload.cards[1]);
+          switch (dealerDraw.value) {
+            case "KING":
+            case "QUEEN":
+            case "JACK":
+              dealerTotalPoint += 10;
+              break;
+            case "ACE":
+              dealerTotalPoint <= 10
+                ? (dealerTotalPoint += 11)
+                : (dealerTotalPoint += 1);
+              break;
+            default:
+              dealerTotalPoint += +dealerDraw.value;
+          }
+
+          state.dealerHandValue = dealerTotalPoint;
+        }
+      });
   },
 });
+
+export const drawCard = createAsyncThunk(
+  "game/drawCard",
+  async (playerHand: Hand) => {
+    return await axios
+      .get(
+        `https://deckofcardsapi.com/api/deck/${playerHand.deck_id}/draw/?count=2`
+      )
+      .then((res) => res.data);
+  }
+);
 
 export const fetchDeck = createAsyncThunk("game/fetchDeck", async () => {
   const deck: Deck = await axios
@@ -130,7 +260,9 @@ export const fetchDeck = createAsyncThunk("game/fetchDeck", async () => {
   const dealerHand: Hand = await axios
     .get(`https://deckofcardsapi.com/api/deck/${deck.deck_id}/draw/?count=2`)
     .then((response) => response.data);
+
   return { deck, playerHand, dealerHand };
 });
 
 export default gameSlice.reducer;
+export const { addBet, stand, resetStates } = gameSlice.actions;

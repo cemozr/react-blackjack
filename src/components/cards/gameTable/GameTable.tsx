@@ -5,8 +5,15 @@ import { useDispatch, useSelector } from "react-redux";
 //states
 import { AppDispatch } from "../../../states/store";
 import { RootState } from "../../../states/store";
-import { fetchDeck, type Card } from "../../../states/slices/gameSlice";
-import { addBet, drawCard } from "../../../states/slices/gameLogicSlice";
+import {
+  fetchDeck,
+  addBet,
+  resetStates,
+  drawCard,
+  type Card,
+  stand,
+} from "../../../states/slices/gameSlice";
+
 //UI
 import { Button } from "../../UI/Button";
 import chipsImage from "../../../assets/chips.png";
@@ -16,38 +23,52 @@ export const GameTable = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const isBetOpen = useSelector(
-    (state: RootState) => state.gameLogicReducer.isBetOpen
+    (state: RootState) => state.gameReducer.isBetOpen
   );
-  const isStand = useSelector(
-    (state: RootState) => state.gameLogicReducer.isStand
+
+  const isStand = useSelector((state: RootState) => state.gameReducer.isStand);
+  const isPending = useSelector(
+    (state: RootState) => state.gameReducer.isPending
   );
   const deck = useSelector((state: RootState) => state.gameReducer.deck);
-  const chips = useSelector((state: RootState) => state.gameLogicReducer.chips);
+  const chips = useSelector((state: RootState) => state.gameReducer.chips);
+
   const playerHand = useSelector(
     (state: RootState) => state.gameReducer.playerHand
   );
   const dealerHand = useSelector(
     (state: RootState) => state.gameReducer.dealerHand
   );
-
+  const playerHandValue = useSelector(
+    (state: RootState) => state.gameReducer.playerHandValue
+  );
+  const dealerHandValue = useSelector(
+    (state: RootState) => state.gameReducer.dealerHandValue
+  );
   useEffect(() => {
     dispatch(fetchDeck());
   }, [dispatch]);
-  console.log(deck);
+  // console.log(deck);
   console.log(playerHand);
   console.log(dealerHand);
 
   const openDealerCards: Card[] = dealerHand.cards.filter((_, i) => i !== 0);
-  console.log(betRef.current?.value);
+  // console.log(betRef.current?.value);
   return (
     <>
-      <div className="outer-container">
-        <Button el="a" to="/" name="Return To Menu" />
-        <h3 className="outer-container__score">Chips: {chips}</h3>
-      </div>
       <div className="game-wrapper">
+        <Button
+          el="a"
+          to="/"
+          name="Return To Menu"
+          click={() => dispatch(resetStates())}
+        />
+
         <div className="game-table-container">
           <div className="game-container">
+            <div className="score-badge btn">
+              <p className="score-badge__text"> Dealer: {dealerHandValue}</p>
+            </div>
             <div className="dealer-container">
               {isStand ? (
                 <img
@@ -62,8 +83,11 @@ export const GameTable = () => {
                   alt="back of card image"
                 />
               )}
+
               {openDealerCards.map((card, i) => {
-                return (
+                return isPending ? (
+                  <div className="lds-hourglass"></div>
+                ) : (
                   <img
                     key={i}
                     className="dealer-container__image"
@@ -73,9 +97,16 @@ export const GameTable = () => {
                 );
               })}
             </div>
+            <div className="score-badge btn ">
+              <p className="score-badge__text">Player: {playerHandValue}</p>
+            </div>
             <div className="player-container">
               {playerHand.cards.map((card, i) => {
-                return (
+                return isPending ? (
+                  <div className="animation-wrapper">
+                    <div className="lds-hourglass"></div>
+                  </div>
+                ) : (
                   <img
                     key={i}
                     className="player-container__image"
@@ -91,12 +122,13 @@ export const GameTable = () => {
               el="button"
               name="Draw"
               disabled={isBetOpen}
-              onClick={() => dispatch(drawCard(deck.deck_id))}
+              onClick={() => dispatch(drawCard(playerHand))}
             />
             <Button el="button" name="Stand" disabled={isBetOpen} />
           </div>
         </div>
         <div className="bet-container">
+          <h3 className="bet-container__score">Chips: {chips}</h3>
           <img className="bet-container__chips-image" src={chipsImage} alt="" />
           <input
             type="number"
