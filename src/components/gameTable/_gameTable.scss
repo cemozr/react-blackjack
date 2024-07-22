@@ -23,6 +23,7 @@
     .game-container {
       margin: 1rem;
       .score-badge {
+        @include text-box;
         margin-left: 0.5rem;
       }
       .dealer-container {

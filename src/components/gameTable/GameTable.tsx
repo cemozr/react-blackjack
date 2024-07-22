@@ -1,32 +1,36 @@
-import "../../../styles.scss";
+import "../../styles.scss";
 //hooks
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 //states
-import { AppDispatch } from "../../../states/store";
-import { RootState } from "../../../states/store";
+import { AppDispatch } from "../../states/store";
+import { RootState } from "../../states/store";
 import {
   fetchDeck,
   addBet,
   resetStates,
   drawCard,
   type Card,
+  setWinnerAndStand,
   stand,
-} from "../../../states/slices/gameSlice";
+  checkChips,
+} from "../../states/slices/gameSlice";
 
 //UI
-import { Button } from "../../UI/Button";
-import chipsImage from "../../../assets/chips.png";
+import { Button } from "../UI/Button";
+import chipsImage from "../../assets/chips.png";
+import { ScoreCard } from "../scoreCard/ScoreCard";
+import { GameOverCard } from "../gameOverCard/GameOverCard";
 
 export const GameTable = () => {
   const betRef = useRef<HTMLInputElement>(null);
   const dispatch = useDispatch<AppDispatch>();
-
   const isBetOpen = useSelector(
     (state: RootState) => state.gameReducer.isBetOpen
   );
 
-  const isStand = useSelector((state: RootState) => state.gameReducer.isStand);
+  let isStand = useSelector((state: RootState) => state.gameReducer.isStand);
+
   const isPending = useSelector(
     (state: RootState) => state.gameReducer.isPending
   );
@@ -45,15 +49,20 @@ export const GameTable = () => {
   const dealerHandValue = useSelector(
     (state: RootState) => state.gameReducer.dealerHandValue
   );
+
   useEffect(() => {
     dispatch(fetchDeck());
   }, [dispatch]);
+  useEffect(() => {
+    dispatch(setWinnerAndStand());
+  }, [playerHandValue, dealerHandValue]);
+
   // console.log(deck);
   console.log(playerHand);
   console.log(dealerHand);
 
   const openDealerCards: Card[] = dealerHand.cards.filter((_, i) => i !== 0);
-  // console.log(betRef.current?.value);
+
   return (
     <>
       <div className="game-wrapper">
@@ -63,11 +72,15 @@ export const GameTable = () => {
           name="Return To Menu"
           click={() => dispatch(resetStates())}
         />
-
+        {chips < 0 && <GameOverCard />}
+        {isStand && <ScoreCard />}
         <div className="game-table-container">
           <div className="game-container">
-            <div className="score-badge btn">
-              <p className="score-badge__text"> Dealer: {dealerHandValue}</p>
+            <div className="score-badge">
+              <p className="score-badge__text">
+                {" "}
+                Dealer: {isStand ? dealerHandValue : "?"}
+              </p>
             </div>
             <div className="dealer-container">
               {isStand ? (
@@ -97,7 +110,7 @@ export const GameTable = () => {
                 );
               })}
             </div>
-            <div className="score-badge btn ">
+            <div className="score-badge">
               <p className="score-badge__text">Player: {playerHandValue}</p>
             </div>
             <div className="player-container">
@@ -121,10 +134,15 @@ export const GameTable = () => {
             <Button
               el="button"
               name="Draw"
-              disabled={isBetOpen}
+              disabled={isBetOpen || isStand}
               onClick={() => dispatch(drawCard(playerHand))}
             />
-            <Button el="button" name="Stand" disabled={isBetOpen} />
+            <Button
+              el="button"
+              name="Stand"
+              disabled={isBetOpen || isStand}
+              onClick={() => dispatch(stand())}
+            />
           </div>
         </div>
         <div className="bet-container">

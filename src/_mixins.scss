@@ -18,6 +18,34 @@
   width: 10rem;
   margin: 0.5rem;
 }
+@mixin menu-card-style {
+  flex-direction: column;
+  width: 30rem;
+  padding: 1rem;
+  position: fixed;
+  top: 25%;
+  z-index: 1;
+  border-radius: 1rem;
+  border: 1px solid $primary;
+  color: white;
+  background-color: black;
+  box-shadow: rgba(252, 186, 3, 0.4) 5px 5px, rgba(252, 186, 3, 0.3) 10px 10px,
+    rgba(252, 186, 3, 0.2) 15px 15px, rgba(252, 186, 3, 0.1) 20px 20px,
+    rgba(252, 186, 3, 0.05) 25px 25px;
+}
+@mixin text-box {
+  padding: 0.6rem;
+  width: 10rem;
+  margin: 1rem;
+  background-color: $primary;
+  border-radius: 0.5rem;
+
+  &__text {
+    font-size: large;
+    font-weight: bold;
+    color: $secondary;
+  }
+}
 
 @mixin loading-animation {
   .lds-hourglass {

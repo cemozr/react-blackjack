@@ -1,5 +1,5 @@
 import "../../../styles.scss";
-import { GameTable } from "../../cards/gameTable/GameTable";
+import { GameTable } from "../../gameTable/GameTable";
 
 export const GamePage = () => {
   return (

@@ -1,0 +1,7 @@
+.score-card-container {
+  @include center;
+  @include menu-card-style;
+  .score-box {
+    @include text-box;
+  }
+}

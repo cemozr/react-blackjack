@@ -38,12 +38,16 @@ type GameState = BaseSetup & {
   isPending: boolean;
   isStand: boolean;
   isBetOpen: boolean;
+  isChipsOut: boolean;
+  isBetValid: boolean;
   turn: "player" | "dealer";
   playerHandValue: number;
   dealerHandValue: number;
   chips: number;
   bet: number;
+  winner: "player" | "dealer" | "draw" | "";
 };
+
 const initialState: GameState = {
   deck: {
     success: false,
@@ -108,11 +112,14 @@ const initialState: GameState = {
   isPending: false,
   isStand: false,
   isBetOpen: true,
+  isChipsOut: false,
+  isBetValid: true,
   turn: "player",
   playerHandValue: 0,
   dealerHandValue: 0,
   chips: 200,
   bet: 0,
+  winner: "",
 };
 let playerTotalPoint: number = 0;
 let dealerTotalPoint: number = 0;
@@ -122,15 +129,66 @@ const gameSlice = createSlice({
   initialState,
   reducers: {
     addBet: (state, action: PayloadAction<number>) => {
-      state.bet = action.payload;
-      state.chips -= state.bet;
-      state.isBetOpen = false;
-      state.turn = "player";
+      if (action.payload > state.chips) {
+        state.isBetValid = false;
+      } else {
+        state.bet = action.payload;
+        state.chips -= state.bet;
+        state.isBetOpen = false;
+        state.turn = "player";
+      }
     },
 
-    stand: () => {},
     resetStates: () => {
       return initialState;
+    },
+    setWinnerAndStand: (state) => {
+      if (state.playerHandValue > 21 && state.dealerHandValue > 21) {
+        state.isStand = true;
+        state.winner = "draw";
+      } else if (state.playerHandValue > 21) {
+        state.isStand = true;
+        state.winner = "dealer";
+      } else if (state.playerHandValue == 21) {
+        state.isStand = true;
+        state.winner = "player";
+      } else if (state.dealerHandValue > 21) {
+        state.isStand = true;
+        state.winner = "player";
+      } else if (state.dealerHandValue == 21) {
+        state.isStand = true;
+        state.winner = "dealer";
+      }
+    },
+    stand: (state) => {
+      state.isStand = true;
+      if (state.playerHandValue > state.dealerHandValue) {
+        state.winner = "player";
+      } else if (state.playerHandValue < state.dealerHandValue) {
+        state.winner = "dealer";
+      } else if (state.playerHandValue == state.dealerHandValue) {
+        state.winner = "draw";
+      }
+    },
+    calculateChips: (state, action: PayloadAction<number>) => {
+      state.isStand = !state.isStand;
+      state.isBetOpen = true;
+      switch (state.winner) {
+        case "player":
+          state.chips += action.payload;
+          break;
+        case "draw":
+          state.chips += action.payload / 2;
+          break;
+        case "dealer":
+          state.chips = state.chips;
+          break;
+      }
+    },
+    checkChips: (state) => {
+      if (state.chips <= 0) {
+        state.isChipsOut = true;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -144,6 +202,12 @@ const gameSlice = createSlice({
         (state, action: PayloadAction<BaseSetup>) => {
           state.isPending = false;
           state.deck = action.payload.deck;
+          state.playerHand.cards = [];
+          state.dealerHand.cards = [];
+          state.playerHandValue = 0;
+          state.dealerHandValue = 0;
+          playerTotalPoint = 0;
+          dealerTotalPoint = 0;
           state.playerHand = action.payload.playerHand;
           state.dealerHand = action.payload.dealerHand;
 
@@ -193,11 +257,11 @@ const gameSlice = createSlice({
         console.log("drawing card");
       })
       .addCase(drawCard.fulfilled, (state, action: PayloadAction<Hand>) => {
+        //drawing cards and calculating hands
         const playerDraw = action.payload.cards[0];
         const dealerDraw = action.payload.cards[1];
         state.isPending = false;
         state.playerHand.cards.push(action.payload.cards[0]);
-        //---------------------------------------------------------------------------------
 
         switch (playerDraw.value) {
           case "KING":
@@ -215,7 +279,7 @@ const gameSlice = createSlice({
         }
 
         state.playerHandValue = playerTotalPoint;
-        //---------------------------------------------------------------------------------
+
         if (dealerTotalPoint <= 17) {
           state.dealerHand.cards.push(action.payload.cards[1]);
           switch (dealerDraw.value) {
@@ -265,4 +329,11 @@ export const fetchDeck = createAsyncThunk("game/fetchDeck", async () => {
 });
 
 export default gameSlice.reducer;
-export const { addBet, stand, resetStates } = gameSlice.actions;
+export const {
+  addBet,
+  resetStates,
+  calculateChips,
+  setWinnerAndStand,
+  stand,
+  checkChips,
+} = gameSlice.actions;
