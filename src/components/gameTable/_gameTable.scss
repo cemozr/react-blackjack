@@ -9,6 +9,12 @@
 .game-wrapper {
   display: flex;
   justify-content: center;
+  gap: 5rem;
+  &__warning-text {
+    width: 100vw;
+    text-align: center;
+    z-index: 1;
+  }
   .game-table-container {
     border: 1px solid $primary;
     border-radius: 1rem;
@@ -57,19 +63,19 @@
   .bet-container {
     @include center;
     flex-direction: column;
-    margin-left: 2rem;
     &__chips-image {
       width: 20rem;
     }
     &__bet-input {
       width: 9.8rem;
-      height: 2rem;
+      margin-bottom: 1rem;
+      height: 2.4rem;
       font-size: large;
       font-weight: bold;
       color: $secondary;
       text-align: center;
       border: 2px solid $primary;
-      border-radius: 0.1rem;
+      border-radius: 0.2rem;
       &:active {
         border-color: $secondary;
       }
