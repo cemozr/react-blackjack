@@ -1,8 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { useSelector } from "react-redux";
-import { RootState } from "../store";
 
 const fetchDeckUrl =
   "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=6";

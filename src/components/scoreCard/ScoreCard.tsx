@@ -2,8 +2,7 @@ import "../../styles.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../states/store";
 import { Button } from "../UI/Button";
-import { calculateChips, fetchDeck } from "../../states/slices/gameSlice";
-import { GameOverCard } from "../gameOverCard/GameOverCard";
+import { calculateChips } from "../../states/slices/gameSlice";
 
 export const ScoreCard = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -17,12 +16,7 @@ export const ScoreCard = () => {
   const playerHandValue = useSelector(
     (state: RootState) => state.gameReducer.playerHandValue
   );
-  const isChipsOut = useSelector(
-    (state: RootState) => state.gameReducer.isChipsOut
-  );
-  const isBetOpen = useSelector(
-    (state: RootState) => state.gameReducer.isBetOpen
-  );
+
   return (
     <div className="score-card-container">
       {winner == "player" ? (

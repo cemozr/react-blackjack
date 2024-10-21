@@ -39,13 +39,11 @@ export const GameTable = () => {
   const isChipsOut = useSelector(
     (state: RootState) => state.gameReducer.isChipsOut
   );
-  const isBetValid = useSelector(
-    (state: RootState) => state.gameReducer.isBetValid
-  );
+
   const warningMode = useSelector(
     (state: RootState) => state.gameReducer.warningMode
   );
-  const deck = useSelector((state: RootState) => state.gameReducer.deck);
+
   const chips = useSelector((state: RootState) => state.gameReducer.chips);
 
   const playerHand = useSelector(
